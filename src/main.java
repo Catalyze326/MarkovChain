@@ -12,7 +12,9 @@ public class main {
         if (words == null)
             System.out.println("The file does not exist... probably.");
         createTrainingData(words, 2);
-        writeSentences("boy");
+        Scanner scnr = new Scanner(System.in);
+        System.out.println("What word would you like to make sentences for next or would you like it to be random?");
+        writeSentences(scnr.next().trim().toLowerCase(), words);
 
     }
 
@@ -36,8 +38,10 @@ public class main {
 
             for (int i = numWords; i < words.size() - numWords; i++) {
                 StringBuilder sb = new StringBuilder();
-                for (int w = 0; w < numWords; w++)
-                    sb.append(words.get(i + w + 1)).append(" ");
+//                for (int w = 0; w < numWords; w++)
+                int w = 0;
+                while (sb.toString().trim().split(" ").length < numWords)
+                    sb.append(words.get(i + w++ + 1)).append(" ");
                 String word = words.get(i);
                 String phrase = sb.toString().trim();
                 phrases[index].putIfAbsent(word, new TreeMap<>());
@@ -49,11 +53,15 @@ public class main {
         }
     }
 
-    private static void writeSentences(String orgStartWord) {
+    private static void writeSentences(String orgStartWord, ArrayList<String> words) {
         for (int i = 0; i <= 10; i++) {
             StringBuilder sb = new StringBuilder();
-            sb.append(orgStartWord + " ");
-            String startWord = orgStartWord;
+            String startWord;
+            if (orgStartWord.equals("random"))
+                startWord = words.get(new SecureRandom().nextInt(words.size()));
+            else
+                startWord = orgStartWord;
+            sb.append(startWord + " ");
             while (!sb.toString().contains(".") && !endLine(sb.toString())) {
                 if (phrases[0].containsKey(startWord)) {
                     String[] topPhrases = new String[10];
@@ -66,14 +74,14 @@ public class main {
                     }
                     SecureRandom sr = new SecureRandom();
                     int index = sr.nextInt(phrases[0].get(startWord).size() < 10 ? phrases[0].get(startWord).size() : 9);
-                    System.out.println(topPhrases[index]);
                     startWord = topPhrases[index].split(" ")[1];
                     sb.append(topPhrases[index] + " ");
                 } else {
                     throw new NullPointerException("The starter word '" + startWord + "' is not in the file given");
                 }
             }
-        System.out.println(sb.toString());
+            if(sb.toString().split(" ").length > 3)
+                System.out.println(sb.toString().split("[.?!]")[0] + ".");
         }
     }
 
@@ -85,7 +93,7 @@ public class main {
                 String s = scnr.next().toLowerCase().trim();
                 words.add(s.replaceAll("[^a-zA-Z.!?']", " ").trim());
             }
-            for (String word : words) System.out.println(word);
+//            for (String word : words) System.out.println(word);
             Set<String> getWordsSize = new HashSet<>(words);
             System.out.println(getWordsSize.size());
             return words;
@@ -96,6 +104,6 @@ public class main {
     }
 
     private static boolean endLine(String sentence) {
-        return sentence.endsWith(".") || sentence.endsWith("!") || sentence.endsWith("?");
+        return sentence.contains(".") || sentence.contains("!") || sentence.contains("?");
     }
 }
