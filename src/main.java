@@ -6,9 +6,10 @@ import java.util.*;
 public class main {
 
     private static HashMap<String, TreeMap<String, Integer>>[] phrases = new HashMap[4];
+    private static final String FILENAME = "Your File Of Words";
 
     public static void main(String[] args) {
-        ArrayList<String> words = readFile("words.txt");
+        ArrayList<String> words = readFile(FILENAME);
         if (words == null)
             System.out.println("The file does not exist... probably.");
         createTrainingData(words, 2);
